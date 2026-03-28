@@ -1,0 +1,65 @@
+{
+  "name": "@aethos/social-cloud",
+  "version": "1.0.0-alpha.1",
+  "description": "Plateforme autonome d'intelligence sociale propulsée par IA agentique",
+  "author": "Aethos Intelligence <contact@aethos.social>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/aethos-social-cloud/core"
+  },
+  "keywords": [
+    "social-intelligence",
+    "agentic-ai",
+    "marketing-automation",
+    "influencer-marketing",
+    "compliance",
+    "data-mesh",
+    "kafka",
+    "multi-agent-systems"
+  ],
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "scripts": {
+    "build": "tsc --build tsconfig.json",
+    "dev": "tsx watch src/index.ts",
+    "dev:full": "vite --host 0.0.0.0 --port 5173",
+    "test": "vitest run",
+    "test:smart": "vitest run --config vitest.smart.config.ts",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "lint": "eslint src/ --ext .ts,.tsx",
+    "lint:fix": "eslint src/ --ext .ts,.tsx --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist/",
+    "simulate:pilot": "tsx src/simulation/run-pilot-simulation.ts",
+    "dashboard": "npx serve public -l 3000",
+    "prepublishOnly": "pnpm run build && pnpm run test"
+  },
+  "dependencies": {
+    "@protobuf-ts/runtime": "^2.9.0",
+    "kafkajs": "^2.2.4",
+    "ioredis": "^5.3.2",
+    "mongodb": "^6.3.0",
+    "faiss-node": "^0.5.1",
+    "zod": "^3.22.4",
+    "pino": "^8.17.2",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
+    "eslint": "^8.55.0",
+    "tsx": "^4.6.0",
+    "typescript": "^5.3.2",
+    "vitest": "^1.0.4",
+    "@vitest/coverage-v8": "^1.0.4"
+  },
+  "peerDependencies": {
+    "openai": "^4.20.0"
+  }
+}
