@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Aethos Social Cloud - Dashboard Pilote</title>
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #151b2b;
+      --accent-blue: #3b82f6;
+      --accent-purple: #8b5cf6;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-orange: #f59e0b;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --border-color: #1e293b;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .dashboard-container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 0;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 30px;
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .status-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+
+    /* Grid Layout */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+
+    .card {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      transition: transform 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent-blue);
+    }
+
+    .card-title {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 15px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .metric-value {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    .metric-change {
+      font-size: 14px;
+      color: var(--accent-green);
+    }
+
+    .metric-change.negative {
+      color: var(--accent-red);
+    }
+
+    /* Live Feed */
+    .feed-container {
+      background: var(--bg-secondary);
+      border-radius: 12px;
+      padding: 20px;
+      border: 1px solid var(--border-color);
+      margin-bottom: 30px;
+    }
+
+    .feed-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .feed-title {
+      font-size: 18px;
+      font-weight: 600;
+    }
+
+    .feed-list {
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    .feed-item {
+      display: flex;
+      gap: 15px;
+      padding: 15px;
+      border-bottom: 1px solid var(--border-color);
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .feed-item:last-child {
+      border-bottom: none;
+    }
+
+    .platform-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .platform-youtube { background: #ff0000; }
+    .platform-tiktok { background: #000000; }
+    .platform-instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .platform-linkedin { background: #0077b5; }
+    .platform-twitter { background: #1da1f2; }
+    .platform-facebook { background: #1877f2; }
+    .platform-pinterest { background: #bd081c; }
+    .platform-snapchat { background: #fffc00; color: #000; }
+
+    .feed-content {
+      flex: 1;
+    }
+
+    .feed-meta {
+      display: flex;
+      gap: 15px;
+      margin-top: 10px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .badge {
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .badge-crisis { background: var(--accent-red); color: white; }
+    .badge-viral { background: var(--accent-orange); color: black; }
+    .badge-normal { background: var(--accent-blue); color: white; }
+
+    /* Cognitive Status */
+    .cognitive-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+    }
+
+    .cognitive-card {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid var(--accent-blue);
+      border-radius: 8px;
+      padding: 15px;
+      text-align: center;
+    }
+
+    .cognitive-card.nexus {
+      background: rgba(139, 92, 246, 0.1);
+      border-color: var(--accent-purple);
+    }
+
+    .cognitive-card.nova {
+      background: rgba(16, 185, 129, 0.1);
+      border-color: var(--accent-green);
+    }
+
+    .cognitive-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .cognitive-value {
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    /* Platform Distribution */
+    .platform-bars {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .platform-bar-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .platform-bar-label {
+      width: 80px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .platform-bar-track {
+      flex: 1;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .platform-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .platform-bar-value {
+      width: 50px;
+      font-size: 12px;
+      text-align: right;
+      color: var(--text-secondary);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-primary);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-color);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-secondary);
+    }
+  </style>
+</head>
+<body>
+  <div class="dashboard-container">
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">🚀 AETHOS SOCIAL CLOUD</div>
+      <div class="status-indicator">
+        <div class="status-dot"></div>
+        <span>Live • Flux temps réel actif</span>
+      </div>
+    </div>
+
+    <!-- Metrics Grid -->
+    <div class="grid">
+      <div class="card">
+        <div class="card-title">Total Impressions (24h)</div>
+        <div class="metric-value" id="total-impressions">0</div>
+        <div class="metric-change">+<span id="impressions-change">0</span>% vs hier</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Engagement Moyen</div>
+        <div class="metric-value"><span id="avg-engagement">0</span>%</div>
+        <div class="metric-change">+<span id="engagement-change">0</span>% vs hier</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Alertes Crise Actives</div>
+        <div class="metric-value" style="color: var(--accent-red);" id="crisis-count">0</div>
+        <div class="metric-change negative" id="crisis-status">Aucune</div>
+      </div>
+
+      <div class="card">
+        <div class="card-title">Contenus Viraux Détectés</div>
+        <div class="metric-value" style="color: var(--accent-orange);" id="viral-count">0</div>
+        <div class="metric-change">Score moyen: <span id="avg-viral-score">0</span></div>
+      </div>
+    </div>
+
+    <!-- Cognitive Triad Status -->
+    <div class="card" style="margin-bottom: 30px;">
+      <div class="card-title">État de la Triade Cognitive</div>
+      <div class="cognitive-grid">
+        <div class="cognitive-card">
+          <div class="cognitive-label">🧠 OMNI-MIND (Penseur)</div>
+          <div class="cognitive-value" id="omni-load">0%</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 5px;">Charge décisionnelle</div>
+        </div>
+        <div class="cognitive-card nexus">
+          <div class="cognitive-label">🌐 NEXUS HIVE (Mémoire)</div>
+          <div class="cognitive-value" id="nexus-sync">0%</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 5px;">Synchronisation collective</div>
+        </div>
+        <div class="cognitive-card nova">
+          <div class="cognitive-label">✨ NOVA GENESIS (Créateur)</div>
+          <div class="cognitive-value" id="nova-creativity">0%</div>
+          <div style="font-size: 11px; color: var(--text-secondary); margin-top: 5px;">Pulsation créative</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Feed -->
+    <div class="feed-container">
+      <div class="feed-header">
+        <div class="feed-title">📡 Flux d'Événements en Temps Réel</div>
+        <div style="font-size: 12px; color: var(--text-secondary);">
+          Mise à jour automatique toutes les 2s
+        </div>
+      </div>
+      <div class="feed-list" id="feed-list">
+        <!-- Events will be inserted here -->
+      </div>
+    </div>
+
+    <!-- Platform Distribution -->
+    <div class="card">
+      <div class="card-title">Répartition par Plateforme</div>
+      <div class="platform-bars" id="platform-bars">
+        <!-- Bars will be inserted here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Inline simulator for browser compatibility
+    class RealTimeStreamSimulator {
+      constructor() {
+        this.platforms = ['youtube', 'tiktok', 'instagram', 'linkedin', 'twitter', 'facebook', 'pinterest', 'snapchat'];
+      }
+
+      generateEvent() {
+        const platform = this.platforms[Math.floor(Math.random() * this.platforms.length)];
+        const isCrisis = Math.random() < 0.05;
+        const isViral = Math.random() < 0.10;
+
+        let type = 'post';
+        let sentiment = 'neutral';
+        let viralScore = Math.floor(Math.random() * 40) + 10;
+
+        if (isCrisis) {
+          type = 'crisis';
+          sentiment = 'critical';
+          viralScore = Math.floor(Math.random() * 30) + 70;
+        } else if (isViral) {
+          type = 'viral_spike';
+          sentiment = 'positive';
+          viralScore = Math.floor(Math.random() * 25) + 75;
+        }
+
+        const baseViews = isViral ? 50000 : Math.floor(Math.random() * 5000);
+        
+        const topics = {
+          crisis: ['Problème de facturation signalé', 'Bug critique sur l\'app', 'Plainte client virale'],
+          viral: ['Cette astuce change tout !', 'Incroyable découverte', 'Offre exclusive limitée'],
+          normal: ['Nouvelle mise à jour disponible', 'Merci pour vos retours positifs', 'Découvrez notre dernier article', 'Coulisses de notre équipe', 'Question du jour']
+        };
+
+        const content = isCrisis ? topics.crisis[Math.floor(Math.random() * topics.crisis.length)] :
+                        isViral ? topics.viral[Math.floor(Math.random() * topics.viral.length)] :
+                        topics.normal[Math.floor(Math.random() * topics.normal.length)];
+
+        const actions = {
+          crisis: 'ACTIVER PROTOCOLE CRISE : Notification immédiate Admin',
+          viral: 'BOOSTER : Augmenter budget pub + Préparer contenu suite',
+          negative: 'SURVEILLER : Analyser tendance avant réaction',
+          normal: 'ARCHIVER : Performance normale'
+        };
+
+        return {
+          id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          platform,
+          type,
+          content: `${content} - ${isCrisis ? 'Urgence' : ''}${isViral ? '#Trending' : ''}`,
+          metrics: {
+            views: baseViews,
+            likes: Math.floor(baseViews * (Math.random() * 0.1)),
+            shares: Math.floor(baseViews * (Math.random() * 0.05)),
+            comments: Math.floor(baseViews * (Math.random() * 0.02)),
+            engagementRate: parseFloat((Math.random() * 5 + (isViral ? 5 : 0)).toFixed(2))
+          },
+          aiAnalysis: {
+            sentiment,
+            viralScore,
+            recommendedAction: actions[type === 'crisis' ? 'crisis' : type === 'viral_spike' ? 'viral' : sentiment === 'negative' ? 'negative' : 'normal'],
+            cognitiveLoad: isCrisis ? 0.9 : isViral ? 0.7 : 0.2
+          },
+          timestamp: Date.now()
+        };
+      }
+
+      startStream(callback, intervalMs = 2000) {
+        console.log('🟢 Aethos Stream Simulator Started...');
+        callback(this.generateEvent());
+        setInterval(() => {
+          const event = this.generateEvent();
+          callback(event);
+          if (event.type === 'crisis') {
+            console.warn(`🚨 CRISIS on ${event.platform.toUpperCase()}`);
+          } else if (event.type === 'viral_spike') {
+            console.log(`🚀 VIRAL on ${event.platform.toUpperCase()}: Score ${event.aiAnalysis.viralScore}`);
+          }
+        }, intervalMs);
+      }
+    }
+
+    const streamSimulator = new RealTimeStreamSimulator();
+
+    // State
+    const state = {
+      totalImpressions: 0,
+      totalEngagement: 0,
+      eventCount: 0,
+      crisisCount: 0,
+      viralCount: 0,
+      totalViralScore: 0,
+      platformCounts: {
+        youtube: 0, tiktok: 0, instagram: 0, linkedin: 0,
+        twitter: 0, facebook: 0, pinterest: 0, snapchat: 0
+      },
+      cognitiveLoad: { omni: 0, nexus: 0, nova: 0 }
+    };
+
+    // DOM Elements
+    const elements = {
+      totalImpressions: document.getElementById('total-impressions'),
+      impressionsChange: document.getElementById('impressions-change'),
+      avgEngagement: document.getElementById('avg-engagement'),
+      engagementChange: document.getElementById('engagement-change'),
+      crisisCount: document.getElementById('crisis-count'),
+      crisisStatus: document.getElementById('crisis-status'),
+      viralCount: document.getElementById('viral-count'),
+      avgViralScore: document.getElementById('avg-viral-score'),
+      omniLoad: document.getElementById('omni-load'),
+      nexusSync: document.getElementById('nexus-sync'),
+      novaCreativity: document.getElementById('nova-creativity'),
+      feedList: document.getElementById('feed-list'),
+      platformBars: document.getElementById('platform-bars')
+    };
+
+    function formatNumber(num) {
+      return num.toLocaleString('fr-FR');
+    }
+
+    function getPlatformColor(platform) {
+      const colors = {
+        youtube: '#ff0000', tiktok: '#000000', instagram: '#e6683c',
+        linkedin: '#0077b5', twitter: '#1da1f2', facebook: '#1877f2',
+        pinterest: '#bd081c', snapchat: '#fffc00'
+      };
+      return colors[platform] || '#3b82f6';
+    }
+
+    function updateMetrics(event) {
+      state.totalImpressions += event.metrics.views;
+      state.totalEngagement += event.metrics.engagementRate;
+      state.eventCount++;
+      
+      if (event.type === 'crisis') state.crisisCount++;
+      if (event.type === 'viral_spike') {
+        state.viralCount++;
+        state.totalViralScore += event.aiAnalysis.viralScore;
+      }
+
+      state.platformCounts[event.platform]++;
+
+      state.cognitiveLoad.omni = Math.min(100, state.cognitiveLoad.omni + (event.aiAnalysis.cognitiveLoad * 10));
+      state.cognitiveLoad.nexus = Math.min(100, state.cognitiveLoad.nexus + 2);
+      state.cognitiveLoad.nova = event.type === 'viral_spike' ? Math.min(100, state.cognitiveLoad.nova + 15) : Math.max(0, state.cognitiveLoad.nova - 2);
+
+      setTimeout(() => {
+        state.cognitiveLoad.omni = Math.max(0, state.cognitiveLoad.omni - 1);
+        state.cognitiveLoad.nexus = Math.max(0, state.cognitiveLoad.nexus - 1);
+      }, 5000);
+
+      render();
+    }
+
+    function render() {
+      elements.totalImpressions.textContent = formatNumber(state.totalImpressions);
+      elements.impressionsChange.textContent = (Math.random() * 20 + 5).toFixed(1);
+      
+      const avgEng = state.eventCount > 0 ? (state.totalEngagement / state.eventCount).toFixed(2) : 0;
+      elements.avgEngagement.textContent = avgEng;
+      elements.engagementChange.textContent = (Math.random() * 10 + 2).toFixed(1);
+
+      elements.crisisCount.textContent = state.crisisCount;
+      elements.crisisStatus.textContent = state.crisisCount > 0 ? `${state.crisisCount} active(s)` : 'Aucune';
+      elements.crisisStatus.className = `metric-change ${state.crisisCount > 0 ? 'negative' : ''}`;
+
+      elements.viralCount.textContent = state.viralCount;
+      const avgViral = state.viralCount > 0 ? (state.totalViralScore / state.viralCount).toFixed(0) : 0;
+      elements.avgViralScore.textContent = avgViral;
+
+      elements.omniLoad.textContent = `${state.cognitiveLoad.omni.toFixed(0)}%`;
+      elements.nexusSync.textContent = `${state.cognitiveLoad.nexus.toFixed(0)}%`;
+      elements.novaCreativity.textContent = `${state.cognitiveLoad.nova.toFixed(0)}%`;
+
+      renderPlatformBars();
+    }
+
+    function renderPlatformBars() {
+      const platforms = Object.keys(state.platformCounts);
+      const maxCount = Math.max(...Object.values(state.platformCounts), 1);
+
+      elements.platformBars.innerHTML = platforms.map(platform => {
+        const count = state.platformCounts[platform];
+        const percentage = (count / maxCount) * 100;
+        const color = getPlatformColor(platform);
+
+        return `
+          <div class="platform-bar-item">
+            <div class="platform-bar-label">${platform.charAt(0).toUpperCase() + platform.slice(1)}</div>
+            <div class="platform-bar-track">
+              <div class="platform-bar-fill" style="width: ${percentage}%; background: ${color};"></div>
+            </div>
+            <div class="platform-bar-value">${count}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function addEventToFeed(event) {
+      const badgeClass = event.type === 'crisis' ? 'badge-crisis' : 
+                         event.type === 'viral_spike' ? 'badge-viral' : 'badge-normal';
+      const badgeText = event.type === 'crisis' ? 'CRISE' : 
+                        event.type === 'viral_spike' ? 'VIRAL' : 'NORMAL';
+
+      const item = document.createElement('div');
+      item.className = 'feed-item';
+      item.innerHTML = `
+        <div class="platform-icon platform-${event.platform}">
+          ${event.platform.charAt(0).toUpperCase()}
+        </div>
+        <div class="feed-content">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <strong>${event.content}</strong>
+            <span class="badge ${badgeClass}">${badgeText}</span>
+          </div>
+          <div class="feed-meta">
+            <span>👁️ ${formatNumber(event.metrics.views)} vues</span>
+            <span>❤️ ${formatNumber(event.metrics.likes)} likes</span>
+            <span>💬 ${event.metrics.comments} commentaires</span>
+            <span>📊 Engagement: ${event.metrics.engagementRate}%</span>
+            <span>🤖 IA: ${event.aiAnalysis.sentiment.toUpperCase()}</span>
+          </div>
+          <div style="margin-top: 8px; font-size: 11px; color: var(--accent-blue);">
+            💡 ${event.aiAnalysis.recommendedAction}
+          </div>
+        </div>
+      `;
+
+      elements.feedList.insertBefore(item, elements.feedList.firstChild);
+
+      while (elements.feedList.children.length > 20) {
+        elements.feedList.removeChild(elements.feedList.lastChild);
+      }
+    }
+
+    // Initialize
+    streamSimulator.startStream((event) => {
+      updateMetrics(event);
+      addEventToFeed(event);
+    }, 2000);
+
+    render();
+    renderPlatformBars();
+  </script>
+</body>
+</html>
