@@ -2,11 +2,16 @@
 # Dependencies
 node_modules/
 
+# Build outputs
 # Build artifacts
 dist/
 build/
 target/
 
+# TypeScript/JavaScript
+*.tsbuildinfo
+.next/
+.nuxt/
 # Python specific
 __pycache__/
 *.pyc
@@ -51,6 +56,35 @@ Thumbs.db
 
 # Coverage
 coverage/
+.nyc_output/
+istanbul/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python (if applicable)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+.eggs/
+eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.coverage
+htmlcov/
+.pytest_cache/
+.mypy_cache/
 htmlcov/
 .coverage
 .coverage.*
